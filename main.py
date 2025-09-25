@@ -1,16 +1,13 @@
 import re
 
-def display_plaintext(ciphertext_words, ciphertext_letters):
+def display_plaintext(ciphertext_words, plaintext_letters):
     letter_index = 0
     plaintext = ""
     for word_index in ciphertext_words:
         plaintext += " "
         for char in ciphertext_words.get(word_index):
             if char.isalpha():
-                if ciphertext_letters[letter_index][1] == 0:
-                    plaintext += "_"
-                else:
-                    plaintext += ciphertext_letters[letter_index][0]
+                plaintext += plaintext_letters[letter_index]
                 letter_index +=1
             elif char == "<":
                 plaintext += "\n"
@@ -33,16 +30,17 @@ def parse_ciphertext():
                 print(f"{i}: {word}")
             
             #create mapping of indices to ciphertext letters
-            letters = re.findall(r'[a-zA-Z]', content)
-            ciphertext_letters = {i: [letter, 0] for i, letter in enumerate(letters)}
+            ciphertext_letters = re.findall(r'[a-zA-Z]', content)
+
+            plaintext_letters = ["_"] * len(ciphertext_letters)
 
             print(f"\n{content}")
-            print(f"\nCurrent Plaintext: \n{display_plaintext(ciphertext_words, ciphertext_letters)}")
+            print(f"\nCurrent Plaintext: \n{display_plaintext(ciphertext_words, plaintext_letters)}")
 
     except FileNotFoundError:
         print("File not found. Please check the path and try again.")
 
-    return content, ciphertext_words, ciphertext_letters
+    return content, ciphertext_words, ciphertext_letters, plaintext_letters
 
 LETTER_VALUE_DICT = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
                      "h": 7, "i": 8, "j": 9, "k": 10, "l": 11, "m": 12,
@@ -92,22 +90,17 @@ def update_backwards(word_index, key_guess, original_key_length):
         current_key = next_key
         for c in current_key:
             #update current ciphertext_letters
-            if c != "+":
-                ciphertext_letters[letter_index + temp] = [c, 1]
+            plaintext_letters[letter_index + temp] = c
 
             #retrieve next ciphertext segment to decode
             if letter_index + temp - (original_key_length + 1) > 0:
-                next_c_letter = ciphertext_letters[letter_index - original_key_length + temp]
-                if next_c_letter[1] == 0:
-                    next_ciphertext += next_c_letter[0]
-                else:
-                    next_ciphertext += "+"
+                next_ciphertext += ciphertext_letters[letter_index - original_key_length + temp]
             temp += 1
         next_key = clean(decrypt_vigenere(clean(current_ciphertext), current_key))
         letter_index -= original_key_length
 
 if __name__ == "__main__":
-    content, ciphertext_words, ciphertext_letters  = parse_ciphertext()
+    content, ciphertext_words, ciphertext_letters, plaintext_letters = parse_ciphertext()
 
     length_of_original_key = int(input("\nEnter the length of the original key: "))
 
@@ -128,4 +121,4 @@ if __name__ == "__main__":
         update_backwards(word_index, key, length_of_original_key)
 
         print(f"\n{content}")
-        print(f"\n{display_plaintext(ciphertext_words, ciphertext_letters)}")
+        print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
