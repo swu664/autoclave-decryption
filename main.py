@@ -66,12 +66,45 @@ def decrypt_vigenere(ciphertext, key):
         else:
             plaintext.append(c)
 
+    return "".join(plaintext)
 
 def clean(text):
     text = re.sub(r'<nl>', "", text)
     text = re.findall(r'[a-zA-Z+]', text)
     return "".join(text).lower()
 
+def update_backwards(word_index, key_guess, original_key_length):
+    #find start position
+    letter_index = 0
+    for i in range(word_index):
+        letter_index += len(clean(ciphertext_words[i]))
+    
+    num_updates = (letter_index // original_key_length) + 1
+    current_key = key_guess
+    next_key = current_key
+    current_ciphertext = ciphertext_words[word_index]
+    next_ciphertext = current_ciphertext
+
+    for j in range(num_updates):
+        temp = 0
+        current_ciphertext = next_ciphertext
+        next_ciphertext = ""
+        current_key = next_key
+        for c in current_key:
+            #update current ciphertext_letters
+            if c != "+":
+                ciphertext_letters[letter_index + temp] = [c, 1]
+
+            #retrieve next ciphertext segment to decode
+            if letter_index + temp - (original_key_length + 1) > 0:
+                next_c_letter = ciphertext_letters[letter_index - original_key_length + temp]
+                if next_c_letter[1] == 0:
+                    next_ciphertext += next_c_letter[0]
+                else:
+                    next_ciphertext += "+"
+            temp += 1
+        next_key = clean(decrypt_vigenere(clean(current_ciphertext), current_key))
+        letter_index -= original_key_length
 
 if __name__ == "__main__":
     parse_ciphertext()
