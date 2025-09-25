@@ -66,7 +66,12 @@ def decrypt_vigenere(ciphertext, key):
         else:
             plaintext.append(c)
 
-    return plaintext
+
+def clean(text):
+    text = re.sub(r'<nl>', "", text)
+    text = re.findall(r'[a-zA-Z+]', text)
+    return "".join(text).lower()
+
 
 if __name__ == "__main__":
     parse_ciphertext()
