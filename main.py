@@ -107,4 +107,25 @@ def update_backwards(word_index, key_guess, original_key_length):
         letter_index -= original_key_length
 
 if __name__ == "__main__":
-    parse_ciphertext()
+    content, ciphertext_words, ciphertext_letters  = parse_ciphertext()
+
+    length_of_original_key = int(input("\nEnter the length of the original key: "))
+
+    while True:
+        user_input = input("\nEnter word index to guess (or 'q' to quit): ")
+
+        if user_input.lower() == 'q':
+            print("Exiting decryption attempt.")
+            break
+
+        word_index = int(user_input)
+        print(f"Ciphertext word [{word_index}]: {ciphertext_words[word_index]}")
+        key = input("Enter your plaintext guess: ")
+
+        if len(key) != len(clean(ciphertext_words.get(word_index, ''))):
+            raise ValueError("Key length must match ciphertext length.")
+
+        update_backwards(word_index, key, length_of_original_key)
+
+        print(f"\n{content}")
+        print(f"\n{display_plaintext(ciphertext_words, ciphertext_letters)}")
