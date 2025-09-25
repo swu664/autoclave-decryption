@@ -1,5 +1,24 @@
 import re
 
+def display_plaintext(ciphertext_words, ciphertext_letters):
+    letter_index = 0
+    plaintext = ""
+    for word_index in ciphertext_words:
+        plaintext += " "
+        for char in ciphertext_words.get(word_index):
+            if char.isalpha():
+                if ciphertext_letters[letter_index][1] == 0:
+                    plaintext += "_"
+                else:
+                    plaintext += ciphertext_letters[letter_index][0]
+                letter_index +=1
+            elif char == "<":
+                plaintext += "\n"
+                break
+            else:
+                plaintext += char
+    return plaintext
+
 def parse_ciphertext():
     file_path = "ciphertext.txt"
     try:
