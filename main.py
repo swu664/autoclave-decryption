@@ -43,6 +43,8 @@ def parse_ciphertext():
         print("File not found. Please check the path and try again.")
 
     return content, ciphertext_words, ciphertext_letters
+
+LETTER_VALUE_DICT = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
                      "h": 7, "i": 8, "j": 9, "k": 10, "l": 11, "m": 12,
                      "n": 13, "o": 14, "p": 15, "q": 16, "r": 17, "s": 18,
                      "t": 19, "u": 20, "v": 21, "w": 22, "x": 23, "y": 24,
@@ -56,8 +58,8 @@ def decrypt_vigenere(ciphertext, key):
 
     for c, k in zip(ciphertext, key):
         if c.isalpha():
-            c_val = letter_value_dict[c.lower()]
-            k_val = letter_value_dict[k.lower()]
+            c_val = LETTER_VALUE_DICT[c.lower()]
+            k_val = LETTER_VALUE_DICT[k.lower()]
             p_val = (c_val - k_val) % 26
             p_char = chr(p_val + ord('a'))
             plaintext.append(p_char)
