@@ -78,33 +78,53 @@ def update_backwards(word_index, key_guess, original_key_length):
         letter_index += len(clean(ciphertext_words[i]))
     
     num_updates = (letter_index // original_key_length) + 1
+
     current_key = key_guess
     next_key = current_key
     current_ciphertext = ciphertext_words[word_index]
     next_ciphertext = current_ciphertext
+    at_beginning = False
 
     for j in range(num_updates):
         temp = 0
         current_ciphertext = next_ciphertext
         next_ciphertext = ""
         current_key = next_key
-        for c in current_key:
+        intermediate_key = ""
+        intermediate_ciphertext = ""
+        for i, c in enumerate(current_key):
             #update current ciphertext_letters
             plaintext_letters[letter_index + temp] = c
 
             #retrieve next ciphertext segment to decode
-            if letter_index + temp - (original_key_length + 1) > 0:
+            if letter_index - original_key_length + temp >= 0:
+                at_beginning = False
                 next_ciphertext += ciphertext_letters[letter_index - original_key_length + temp]
+                intermediate_key += c
+                intermediate_ciphertext += current_ciphertext[i]
+            else:
+                at_beginning = True
             temp += 1
+            if i == len(current_key) - 1 and intermediate_key and intermediate_ciphertext:
+                current_key = intermediate_key
+                current_ciphertext = intermediate_ciphertext
+        if at_beginning:
+            break
         next_key = clean(decrypt_vigenere(clean(current_ciphertext), current_key))
         letter_index -= original_key_length
+    
+    if letter_index < 0:
+        for i, c in enumerate(next_key):
+            plaintext_letters[i] = c
+
 def update_forwards(word_index, key_guess, original_key_length):
     #find start position
     letter_index = 0
     for i in range(word_index):
         letter_index += len(clean(ciphertext_words[i]))
     
-    num_updates = ((len(ciphertext_letters) - letter_index) // original_key_length) + 3
+    num_updates = ((len(ciphertext_letters) - letter_index) // original_key_length) + 1
+
     current_key = key_guess
     next_key = current_key
     current_ciphertext = ciphertext_words[word_index]
@@ -116,20 +136,35 @@ def update_forwards(word_index, key_guess, original_key_length):
         current_ciphertext = next_ciphertext
         next_ciphertext = ""
         current_key = next_key
-        for c in current_key:
+        intermediate_key = ""
+        intermediate_ciphertext = ""
+        for i, c in enumerate(current_key):
             #update plaintext_letters
             plaintext_letters[letter_index + temp] = c
             
             #retrieve next ciphertext segment to decode
             if letter_index + temp + original_key_length < len(ciphertext_letters):
+                at_end = False
                 next_ciphertext += ciphertext_letters[letter_index + original_key_length + temp]
+                intermediate_key += c
+                intermediate_ciphertext += current_ciphertext[i]
             else:
                 at_end = True
             temp += 1
+            if i == len(current_key) - 1 and intermediate_key and intermediate_ciphertext:
+                current_key = intermediate_key
+                current_ciphertext = intermediate_ciphertext
+                next_key = clean(decrypt_vigenere(clean(next_ciphertext), current_key))
+                letter_index += original_key_length  
         if at_end:
             break
-        next_key = clean(decrypt_vigenere(clean(next_ciphertext), current_key))
-        letter_index += original_key_length
+
+    last_index = len(plaintext_letters) - 1
+    end_index = len(next_key) - (letter_index + len(next_key) - last_index)
+    if letter_index + len(next_key) > last_index:
+        end_key = next_key[0:end_index + 1]
+        for i, c in enumerate(end_key):
+            plaintext_letters[last_index - end_index + i] = c
 
 if __name__ == "__main__":
     content, ciphertext_words, ciphertext_letters, plaintext_letters = parse_ciphertext()
