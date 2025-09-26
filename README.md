@@ -1,1 +1,28 @@
 # autoclave-decryption
+
+A python tool for decrypting an autoclave (autokey) ciphertext with preserved spaces and punctuation, given the initial passphrase(key) length.
+
+**Installation**
+
+Clone the repository.  
+- For instructions, see https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository.
+
+**Usage**
+
+1. Copy and paste the ciphertext you would like to decrypt into ciphertext.txt file.
+2. Run main.py.
+- The terminal should display an indexed list of the words from your ciphertext, a copy of the ciphertext, and your current plaintext.
+3. Follow the prompts in the terminal:
+- Enter the length of the original key
+- Enter word index to guess (or 'q' to quit)
+4. At this point, the intention is that you use the number of letters in any encrypted ciphertext word to guess potential words of the same number of letters. If your guess is correct, you will notice that Current Plaintext will propogate your guess in a way that the letters make sense, given the preserved spaces and punctuation, i.e., making it easier to guess the rest of your ciphertext. If your guess is incorrect, it is likely that the resulting plaintext will consist of random letters.
+5. If the plaintext that corresponds to the initial key is complete, when you exit using 'q', the inital key will be recovered and displayed.
+
+**Features**
+- Decrypts an autoclave (autokey) ciphertext with preserved spaces and punctuation, given the initial passphrase(key) length.
+  - Propogates each guess automatically
+  - Safely handles decryption at the start and end of the ciphertext
+- Recovers inital key, if the plaintext that corresponds to the initial key is complete.
+
+**Planned Features**
+- Allows users to reverse a guess
