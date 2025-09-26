@@ -55,6 +55,8 @@ def decrypt_vigenere(ciphertext, key):
     plaintext = []
 
     for c, k in zip(ciphertext, key):
+        if k == "_":
+            return "Incomplete plaintext – Unable to recover inital key."
         if c.isalpha():
             c_val = LETTER_VALUE_DICT[c.lower()]
             k_val = LETTER_VALUE_DICT[k.lower()]
@@ -190,3 +192,5 @@ if __name__ == "__main__":
 
         print(f"\n{content}")
         print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
+
+    print(f"Initial key: {decrypt_vigenere(''.join(ciphertext_letters[0:length_of_original_key]), ''.join(plaintext_letters[0:length_of_original_key]))}")
