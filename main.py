@@ -98,6 +98,38 @@ def update_backwards(word_index, key_guess, original_key_length):
             temp += 1
         next_key = clean(decrypt_vigenere(clean(current_ciphertext), current_key))
         letter_index -= original_key_length
+def update_forwards(word_index, key_guess, original_key_length):
+    #find start position
+    letter_index = 0
+    for i in range(word_index):
+        letter_index += len(clean(ciphertext_words[i]))
+    
+    num_updates = ((len(ciphertext_letters) - letter_index) // original_key_length) + 3
+    current_key = key_guess
+    next_key = current_key
+    current_ciphertext = ciphertext_words[word_index]
+    next_ciphertext = current_ciphertext
+    at_end = False
+
+    for j in range(num_updates):
+        temp = 0
+        current_ciphertext = next_ciphertext
+        next_ciphertext = ""
+        current_key = next_key
+        for c in current_key:
+            #update plaintext_letters
+            plaintext_letters[letter_index + temp] = c
+            
+            #retrieve next ciphertext segment to decode
+            if letter_index + temp + original_key_length < len(ciphertext_letters):
+                next_ciphertext += ciphertext_letters[letter_index + original_key_length + temp]
+            else:
+                at_end = True
+            temp += 1
+        if at_end:
+            break
+        next_key = clean(decrypt_vigenere(clean(next_ciphertext), current_key))
+        letter_index += original_key_length
 
 if __name__ == "__main__":
     content, ciphertext_words, ciphertext_letters, plaintext_letters = parse_ciphertext()
@@ -119,6 +151,7 @@ if __name__ == "__main__":
             raise ValueError("Key length must match ciphertext length.")
 
         update_backwards(word_index, key, length_of_original_key)
+        update_forwards(word_index, key, length_of_original_key)
 
         print(f"\n{content}")
         print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
