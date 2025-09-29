@@ -2,7 +2,8 @@ import re, string
 
 def display_plaintext(ciphertext_words, plaintext_letters):
     letter_index = 0
-    plaintext = ""
+    line_index = 1
+    plaintext = "1"
     for word_index in ciphertext_words:
         plaintext += " "
         for char in ciphertext_words.get(word_index):
@@ -10,7 +11,8 @@ def display_plaintext(ciphertext_words, plaintext_letters):
                 plaintext += plaintext_letters[letter_index]
                 letter_index +=1
             elif char == "<":
-                plaintext += "\n"
+                line_index += 1
+                plaintext += "\n" + str(line_index)
                 break
             else:
                 plaintext += char
@@ -34,13 +36,12 @@ def parse_ciphertext():
 
             plaintext_letters = ["_"] * len(ciphertext_letters)
 
-            print(f"\n{content}")
             print(f"\nCurrent Plaintext: \n{display_plaintext(ciphertext_words, plaintext_letters)}")
 
     except FileNotFoundError:
         print("File not found. Please check the path and try again.")
 
-    return content, ciphertext_words, ciphertext_letters, plaintext_letters
+    return ciphertext_words, ciphertext_letters, plaintext_letters
 
 LETTER_VALUE_DICT = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
                      "h": 7, "i": 8, "j": 9, "k": 10, "l": 11, "m": 12,
@@ -169,7 +170,7 @@ def update_forwards(word_index, key_guess, original_key_length):
             plaintext_letters[last_index - end_index + i] = c
 
 if __name__ == "__main__":
-    content, ciphertext_words, ciphertext_letters, plaintext_letters = parse_ciphertext()
+    ciphertext_words, ciphertext_letters, plaintext_letters = parse_ciphertext()
 
     length_of_original_key = int(input("\nEnter the length of the original key: "))
 
@@ -192,7 +193,6 @@ if __name__ == "__main__":
         update_backwards(word_index, key, length_of_original_key)
         update_forwards(word_index, key, length_of_original_key)
 
-        print(f"\n{content}")
         print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
 
         reverse_guess = input("\nEnter 'r' to reverse the guess (or any key to continue): ")
