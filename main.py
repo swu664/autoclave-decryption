@@ -1,4 +1,4 @@
-import re
+import re, string
 
 def display_plaintext(ciphertext_words, plaintext_letters):
     letter_index = 0
@@ -6,7 +6,7 @@ def display_plaintext(ciphertext_words, plaintext_letters):
     for word_index in ciphertext_words:
         plaintext += " "
         for char in ciphertext_words.get(word_index):
-            if char.isalpha():
+            if char in string.ascii_letters:
                 plaintext += plaintext_letters[letter_index]
                 letter_index +=1
             elif char == "<":
