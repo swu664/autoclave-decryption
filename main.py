@@ -186,11 +186,20 @@ if __name__ == "__main__":
 
         if len(key) != len(clean(ciphertext_words.get(word_index, ''))):
             raise ValueError("Key length must match ciphertext length.")
+        
+        previous_state = plaintext_letters.copy()
 
         update_backwards(word_index, key, length_of_original_key)
         update_forwards(word_index, key, length_of_original_key)
 
         print(f"\n{content}")
         print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
+
+        reverse_guess = input("\nEnter 'r' to reverse the guess (or any key to continue): ")
+        if reverse_guess.lower() == 'r':
+            plaintext_letters = previous_state
+            print(f"\n{display_plaintext(ciphertext_words, plaintext_letters)}")
+        else:
+            continue
 
     print(f"Initial key: {decrypt_vigenere(''.join(ciphertext_letters[0:length_of_original_key]), ''.join(plaintext_letters[0:length_of_original_key]))}")
